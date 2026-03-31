@@ -1,0 +1,19 @@
+{
+  "name": "steering-log",
+  "description": "A Claude Code plugin that automatically detects and logs human steering moments from AI-assisted development sessions.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Hanlogy",
+    "email": "info@hanlogy.com",
+    "url": "https://hanlogy.com"
+  },
+  "homepage": "https://github.com/hanlogy/steering-log",
+  "repository": "https://github.com/hanlogy/steering-log",
+  "license": "MIT",
+  "keywords": [
+    "steering log",
+    "human steering",
+    "ai interaction logging",
+    "session logger"
+  ]
+}

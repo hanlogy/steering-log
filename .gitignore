@@ -1,0 +1,7 @@
+node_modules/
+/scripts/
+
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+.npmrc
