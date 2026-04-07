@@ -21,7 +21,6 @@ export const EPISODE_RESULTS = [
   'paused',
   'cancelled',
   'failed',
-  'unknown',
 ] as const;
 
 export const HOOK_EVENT_NAMES = [

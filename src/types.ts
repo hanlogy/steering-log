@@ -71,7 +71,7 @@ export interface SummarizerAgentMomentOutput extends SummarizerAgentOutputBase {
 
 export interface SummarizerAgentEpisodeOutput extends SummarizerAgentOutputBase {
   readonly isNewEpisode: true;
-  readonly previousResult: EpisodeResults;
+  readonly previousResult: EpisodeResults | undefined;
   readonly topic: string;
 }
 

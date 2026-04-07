@@ -61,7 +61,7 @@ export function parseSummarizerAgentOutput(
     isNewEpisode: true,
     previousResult: isOneOf(EPISODE_RESULTS, previous_result)
       ? previous_result
-      : 'unknown',
+      : undefined,
     topic,
     type,
     judgment,
