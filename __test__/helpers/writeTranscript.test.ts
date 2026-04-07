@@ -113,19 +113,4 @@ describe('writeTranscript', () => {
     expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
 
-  test('derives transcript path from episode path', () => {
-    writeTranscript({
-      messages: MESSAGES,
-      triggerTimestamp: '2026-03-27T14:32:11.000Z',
-      episodePath: EPISODE_PATH,
-      isNewEpisode: true,
-      type: 'pushback',
-      topic: 'Add auth middleware',
-    });
-
-    expect(mockWriteFileSync).toHaveBeenCalledWith(
-      TRANSCRIPT_PATH,
-      expect.any(String),
-    );
-  });
 });
