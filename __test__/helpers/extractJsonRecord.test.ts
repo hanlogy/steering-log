@@ -45,4 +45,29 @@ describe('extractJsonRecord', () => {
 
     expect(extractJsonRecord(input)).toStrictEqual({ is_moment: true });
   });
+
+  test('extracts JSON when a stray closing brace follows it', () => {
+    expect(extractJsonRecord('{"key":"value"} trailing }')).toStrictEqual({
+      key: 'value',
+    });
+  });
+
+  test('extracts JSON when code with braces follows it', () => {
+    const input = '{"is_moment":false}\n\n() => { return 0; }';
+
+    expect(extractJsonRecord(input)).toStrictEqual({ is_moment: false });
+  });
+
+  test('extracts JSON whose string value contains braces when a stray brace follows', () => {
+    expect(extractJsonRecord('{"msg":"a}b"} trailing }')).toStrictEqual({
+      msg: 'a}b',
+    });
+  });
+
+  test('handles escaped backslash immediately before a closing quote', () => {
+    // "path\\" in JSON — the \\ is an escaped backslash, not an escape for the following "
+    expect(extractJsonRecord('{"k":"path\\\\"}')).toStrictEqual({
+      k: 'path\\',
+    });
+  });
 });

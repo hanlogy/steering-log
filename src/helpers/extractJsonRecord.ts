@@ -2,32 +2,51 @@ import type { JsonRecord } from '@/types';
 import { isJsonRecord } from './checkTypes';
 
 export function extractJsonRecord(input: string): JsonRecord | null {
-  const end = input.lastIndexOf('}');
-
-  if (end < 0) {
-    return null;
-  }
-
-  let pos = 0;
-
-  while (pos <= end) {
-    const start = input.indexOf('{', pos);
-
-    if (start < 0 || start > end) {
-      break;
+  for (let i = 0; i < input.length; i++) {
+    if (input[i] !== '{') {
+      continue;
     }
 
-    try {
-      const data: unknown = JSON.parse(input.slice(start, end + 1));
+    let depth = 0;
+    let inString = false;
+    let escape = false;
 
-      if (isJsonRecord(data)) {
-        return data;
+    for (let j = i; j < input.length; j++) {
+      const ch = input[j];
+
+      if (escape) {
+        escape = false;
+        continue;
       }
-    } catch {
-      // try next {
-    }
+      if (ch === '\\' && inString) {
+        escape = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = !inString;
+        continue;
+      }
+      if (inString) {
+        continue;
+      }
 
-    pos = start + 1;
+      if (ch === '{') {
+        depth++;
+      } else if (ch === '}') {
+        depth--;
+        if (depth === 0) {
+          try {
+            const data: unknown = JSON.parse(input.slice(i, j + 1));
+            if (isJsonRecord(data)) {
+              return data;
+            }
+          } catch {
+            // balanced but not valid JSON — try next {
+          }
+          break;
+        }
+      }
+    }
   }
 
   return null;
