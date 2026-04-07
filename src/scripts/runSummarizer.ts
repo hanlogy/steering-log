@@ -1,5 +1,6 @@
 import { buildPaths } from '@/helpers/buildPaths';
 import { parseSummarizerAgentOutput } from '@/helpers/parseSummarizerAgentOutput';
+import { AGENT_MAX_RETRIES } from '@/constants';
 import { advanceSummarizer } from '@/helpers/advanceSummarizer';
 import { buildEpisodeFileName } from '@/helpers/buildEpisodeFileName';
 import { findLatestEpisode } from '@/helpers/findLatestEpisode';
@@ -46,12 +47,17 @@ export function runSummarizer(cwd: string): void {
         ? readFileSync(latestEpisode, 'utf-8')
         : undefined;
 
-    const parsed = parseSummarizerAgentOutput(
+    let parsed = parseSummarizerAgentOutput(
       spawnSummarizerAgent(buildPrompt(context, episodeContent)),
     );
 
+    for (let attempt = 1; parsed === null && attempt <= AGENT_MAX_RETRIES; attempt++) {
+      parsed = parseSummarizerAgentOutput(
+        spawnSummarizerAgent(buildPrompt(context, episodeContent)),
+      );
+    }
+
     if (
-      // TODO: retry on null before advancing (transient agent failure)
       !parsed?.isMoment ||
       // Agent returned same-episode but no episode exists — inconsistent response, skip.
       (!parsed.isNewEpisode && !latestEpisode)

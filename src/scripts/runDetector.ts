@@ -4,6 +4,7 @@ import { writeTriggersQueue } from '@/helpers/writeTriggersQueue';
 import { parseDetectorAgentOutput } from '@/helpers/parseDetectorAgentOutput';
 import { spawnSummarizerScript } from '@/helpers/spawnScripts';
 import { spawnDetectorAgent } from '@/helpers/spawnAgents';
+import { AGENT_MAX_RETRIES } from '@/constants';
 
 const cwd = process.argv[2];
 
@@ -31,11 +32,16 @@ export function runDetector(cwd: string): void {
 
     lastTimestamp = humanMessage.timestamp;
 
-    const agentOutput = parseDetectorAgentOutput(
+    let agentOutput = parseDetectorAgentOutput(
       spawnDetectorAgent(buildPrompt(context.messages)),
     );
 
-    // TODO: retry on null before advancing (transient agent failure)
+    for (let attempt = 1; agentOutput === null && attempt <= AGENT_MAX_RETRIES; attempt++) {
+      agentOutput = parseDetectorAgentOutput(
+        spawnDetectorAgent(buildPrompt(context.messages)),
+      );
+    }
+
     if (agentOutput === null) {
       advance();
       continue;

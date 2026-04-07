@@ -31,6 +31,8 @@ export const HOOK_EVENT_NAMES = [
   'UserPromptSubmit',
 ] as const;
 
+export const AGENT_MAX_RETRIES = 2;
+
 export const SCRIPTS_DIR = 'scripts/';
 export const CLEANUP_SCRIPT = 'cleanup.js';
 export const APPEND_TO_BUFFER_SCRIPT = 'appendToBuffer.js';
