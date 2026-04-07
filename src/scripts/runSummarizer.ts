@@ -9,6 +9,7 @@ import { join } from 'path';
 import type { SummarizerContext } from '@/types';
 import { completeEpisode } from '@/helpers/completeEpisode';
 import { writeMoment } from '@/helpers/writeMoment';
+import { writeTranscript } from '@/helpers/writeTranscript';
 import { findMessage } from '@/helpers/findMessage';
 
 const cwd = process.argv[2];
@@ -81,6 +82,18 @@ export function runSummarizer(cwd: string): void {
     }
 
     writeMoment(parsed, trigger.timestamp, episodePath);
+
+    if (process.env['CLAUDE_PLUGIN_OPTION_SAVE_TRANSCRIPT'] === '1') {
+      writeTranscript({
+        messages: context.messages,
+        triggerTimestamp: trigger.timestamp,
+        episodePath,
+        isNewEpisode: parsed.isNewEpisode,
+        type: parsed.type,
+        topic: parsed.isNewEpisode ? parsed.topic : undefined,
+      });
+    }
+
     advance();
   }
 }

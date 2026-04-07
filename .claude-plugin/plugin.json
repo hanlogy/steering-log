@@ -15,5 +15,11 @@
     "human steering",
     "ai interaction logging",
     "session logger"
-  ]
+  ],
+  "userConfig": {
+    "save_transcript": {
+      "description": "Save raw conversation transcripts alongside episode files for quality verification. Files contain the full message window seen by the Summarizer Agent. Note: transcripts include complete conversation content — enable only on trusted machines.",
+      "sensitive": false
+    }
+  }
 }
