@@ -82,8 +82,11 @@ Do NOT classify as a trigger:
 - Confusion or requests for clarification ("what?", "huh?", "can you explain")
 - Social acknowledgement ("ok", "maybe you're right", "I see")
 - Follow-up questions that continue the same topic
-- Additive follow-on requests that extend what was just built without rejecting or
-  correcting anything ("can we also X?", "how about adding Y?")
+- Additive follow-on requests unless they are a direct prompt for action that
+  changes the shape of what was just built — its type signature, interface, or
+  design. If it is a question, discussion, or adds context without demanding a
+  redesign, it is not a trigger ("can you add a comment?", "what about X?",
+  "I think we might need Y")
 - Selecting from options that Claude offered ("yes, option 2", "the second one")
 
 The bar is high. When in doubt, return false.

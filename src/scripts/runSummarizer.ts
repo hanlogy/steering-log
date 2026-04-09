@@ -142,8 +142,11 @@ A moment is worth logging when the developer makes a deliberate technical or pro
 - preference: asserts a specific way of doing things
 
 NOT a moment:
-(1) Additive follow-on requests that simply extend what was just built without
-    rejecting or correcting anything — the developer is just asking for more.
+(1) Additive follow-on requests, unless they are a direct prompt for action that
+    changes the shape of what was just built — its type signature, interface, or
+    design. Questions, discussion, or messages that add context without demanding
+    a redesign are not moments ("can you add a comment?", "what about X?",
+    "I think we might need Y").
 (2) Weak or incidental signals that, within the context of the full conversation,
     carry no meaningful steering weight — a passing remark, a minor wording tweak,
     or a throwaway preference that would not matter in a future session.
@@ -152,8 +155,10 @@ A new episode begins when the current task is done, abandoned, or significantly 
 
 For \`judgment\`: one or two sentences. Lead with what the developer decided. Do not
 front-load with setup ("When Claude...", "After Claude...", "This developer..."). Do
-not restate what is in \`context\`. Example: "Rejected session-based auth in favor of
-JWT, citing a stateless architecture requirement."
+not restate what is in \`context\`. Do not include classification reasoning — never
+mention "shape", "type signature", "interface", or similar structural language unless
+the developer used those words themselves. Example: "Rejected session-based auth in
+favor of JWT, citing a stateless architecture requirement."
 
 For \`context\`: describe what Claude was doing at that moment. Include a code snippet
 (≤10 lines) if it aids clarity.
