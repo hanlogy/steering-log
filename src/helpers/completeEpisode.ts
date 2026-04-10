@@ -6,13 +6,13 @@ export function completeEpisode({
   result,
 }: {
   path: string | null;
-  result: EpisodeResults;
+  result: EpisodeResults | undefined;
 }): void {
   if (!path || !existsSync(path)) {
     return;
   }
   const content = readFileSync(path, 'utf-8');
   if (!content.trimEnd().match(/\*\*Result\*\*:\s*\S+\s*$/)) {
-    appendFileSync(path, `\n\n---\n\n**Result**: ${result}`);
+    appendFileSync(path, `\n\n---\n\n**Result**: ${result ?? 'unknown'}`);
   }
 }

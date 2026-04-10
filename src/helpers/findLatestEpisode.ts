@@ -7,7 +7,7 @@ export function findLatestEpisode(steeringLogDir: string): string | null {
   }
 
   const files = readdirSync(steeringLogDir)
-    .filter((f) => f.endsWith('.md'))
+    .filter((f) => f.endsWith('.md') && !f.endsWith('.transcript.md'))
     .sort();
 
   const last = files[files.length - 1];

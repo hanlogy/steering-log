@@ -4,6 +4,8 @@ import { writeTriggersQueue } from '@/helpers/writeTriggersQueue';
 import { parseDetectorAgentOutput } from '@/helpers/parseDetectorAgentOutput';
 import { spawnSummarizerScript } from '@/helpers/spawnScripts';
 import { spawnDetectorAgent } from '@/helpers/spawnAgents';
+import { AGENT_MAX_RETRIES } from '@/constants';
+import type { DetectorAgentOutput } from '@/types';
 
 const cwd = process.argv[2];
 
@@ -31,11 +33,11 @@ export function runDetector(cwd: string): void {
 
     lastTimestamp = humanMessage.timestamp;
 
-    const agentOutput = parseDetectorAgentOutput(
-      spawnDetectorAgent(buildPrompt(context.messages)),
+    const agentOutput = runDetectorWithRetry(
+      cwd,
+      buildPrompt(context.messages),
     );
 
-    // TODO: retry on null before advancing (transient agent failure)
     if (agentOutput === null) {
       advance();
       continue;
@@ -48,6 +50,27 @@ export function runDetector(cwd: string): void {
 
     advance();
   }
+}
+
+function runDetectorWithRetry(
+  cwd: string,
+  prompt: string,
+): DetectorAgentOutput | null {
+  let agentOutput = parseDetectorAgentOutput(
+    spawnDetectorAgent({ cwd, prompt, attempt: 1 }),
+  );
+
+  for (
+    let attempt = 2;
+    agentOutput === null && attempt <= AGENT_MAX_RETRIES + 1;
+    attempt++
+  ) {
+    agentOutput = parseDetectorAgentOutput(
+      spawnDetectorAgent({ cwd, prompt, attempt }),
+    );
+  }
+
+  return agentOutput;
 }
 
 function buildPrompt(
@@ -76,8 +99,11 @@ Do NOT classify as a trigger:
 - Confusion or requests for clarification ("what?", "huh?", "can you explain")
 - Social acknowledgement ("ok", "maybe you're right", "I see")
 - Follow-up questions that continue the same topic
-- Additive follow-on requests that extend what was just built without rejecting or
-  correcting anything ("can we also X?", "how about adding Y?")
+- Additive follow-on requests unless they are a direct prompt for action that
+  changes the shape of what was just built — its type signature, interface, or
+  design. If it is a question, discussion, or adds context without demanding a
+  redesign, it is not a trigger ("can you add a comment?", "what about X?",
+  "I think we might need Y")
 - Selecting from options that Claude offered ("yes, option 2", "the second one")
 
 The bar is high. When in doubt, return false.

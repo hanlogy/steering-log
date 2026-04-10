@@ -1,5 +1,5 @@
-export const HAIKU_MODEL = 'claude-haiku-4-5-20251001';
-export const SONNET_MODEL = 'claude-sonnet-4-6';
+export const DETECTOR_MODEL = 'claude-haiku-4-5-20251001';
+export const SUMMARIZER_MODEL = 'claude-sonnet-4-6';
 
 export const STEERING_LOG_DIR = 'steering_log';
 export const CONVERSATION_DIR = '.conversation';
@@ -21,7 +21,6 @@ export const EPISODE_RESULTS = [
   'paused',
   'cancelled',
   'failed',
-  'unknown',
 ] as const;
 
 export const HOOK_EVENT_NAMES = [
@@ -31,6 +30,8 @@ export const HOOK_EVENT_NAMES = [
   'Stop',
   'UserPromptSubmit',
 ] as const;
+
+export const AGENT_MAX_RETRIES = 2;
 
 export const SCRIPTS_DIR = 'scripts/';
 export const CLEANUP_SCRIPT = 'cleanup.js';
