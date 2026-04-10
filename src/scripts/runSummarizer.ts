@@ -89,7 +89,7 @@ export function runSummarizer(cwd: string): void {
 
     writeMoment(parsed, trigger.timestamp, episodePath);
 
-    if (process.env['CLAUDE_PLUGIN_OPTION_SAVE_TRANSCRIPT'] === '1') {
+    if (process.env['CLAUDE_PLUGIN_OPTION_SAVE_TRANSCRIPT'] === 'true') {
       writeTranscript({
         messages: context.messages,
         triggerTimestamp: trigger.timestamp,
