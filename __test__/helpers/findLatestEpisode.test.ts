@@ -56,4 +56,13 @@ describe('findLatestEpisode', () => {
 
     expect(findLatestEpisode(DIR)).toBe(`${DIR}/20260327143200-add-auth.md`);
   });
+
+  test('ignores .transcript.md files when selecting the latest', () => {
+    mockReaddirSync.mockReturnValue([
+      '20260327143200-add-auth.md',
+      '20260327143200-add-auth.transcript.md',
+    ] as never);
+
+    expect(findLatestEpisode(DIR)).toBe(`${DIR}/20260327143200-add-auth.md`);
+  });
 });
