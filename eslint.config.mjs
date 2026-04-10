@@ -40,7 +40,7 @@ export default defineConfig(
       ],
       '@typescript-eslint/prefer-regexp-exec': 'off',
       'prefer-regexp-exec': 'off',
-      'curly': ['error', 'all'],
+      curly: ['error', 'all'],
     },
   },
   {

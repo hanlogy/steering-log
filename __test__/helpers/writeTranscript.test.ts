@@ -112,5 +112,4 @@ describe('writeTranscript', () => {
     );
     expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
-
 });

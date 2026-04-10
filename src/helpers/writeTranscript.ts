@@ -24,7 +24,7 @@ export function writeTranscript({
   episodePath: string;
   isNewEpisode: boolean;
   type: string;
-  topic?: string;
+  topic?: string | undefined;
 }): void {
   const transcriptPath = episodePath.replace(/\.md$/, '.transcript.md');
 
