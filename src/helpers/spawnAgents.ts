@@ -13,14 +13,17 @@ function spawnAgent({
   attempt,
 }: SpawnAgentParams): string | null {
   if (process.env['CLAUDE_PLUGIN_OPTION_DEBUG_PROMPTS'] === 'true') {
-    const { conversationDir } = buildPaths(cwd);
-    mkdirSync(conversationDir, { recursive: true });
-    const logPath = join(conversationDir, `${agentName}-prompts.log`);
-
-    appendFileSync(
-      logPath,
-      `${new Date().toISOString()}, attempt: ${attempt}\n${prompt}\n\n---\n\n`,
-    );
+    try {
+      const { conversationDir } = buildPaths(cwd);
+      mkdirSync(conversationDir, { recursive: true });
+      const logPath = join(conversationDir, `${agentName}-prompts.log`);
+      appendFileSync(
+        logPath,
+        `${new Date().toISOString()}, attempt: ${attempt}\n${prompt}\n\n---\n\n`,
+      );
+    } catch {
+      // debug logging is best-effort
+    }
   }
 
   const result = spawnSync('claude', ['--print', '--model', model], {
