@@ -1,13 +1,27 @@
 import { spawnSync } from 'child_process';
-import { HAIKU_MODEL, SONNET_MODEL } from '@/constants';
+import { DETECTOR_MODEL, SUMMARIZER_MODEL } from '@/constants';
+import { appendFileSync } from 'fs';
+import { join } from 'path';
+import { buildPaths } from './buildPaths';
+import type { SpawnAgentParams } from '@/types';
 
 function spawnAgent({
   model,
   prompt,
-}: {
-  model: typeof HAIKU_MODEL | typeof SONNET_MODEL;
-  prompt: string;
-}): string | null {
+  agentName,
+  cwd,
+  attempt,
+}: SpawnAgentParams): string | null {
+  if (process.env['CLAUDE_PLUGIN_OPTION_DEBUG_PROMPTS'] === 'true') {
+    const { conversationDir } = buildPaths(cwd);
+    const logPath = join(conversationDir, `${agentName}-prompts.log`);
+
+    appendFileSync(
+      logPath,
+      `${new Date().toISOString()}, attempt: ${attempt}\n${prompt}\n\n---\n\n`,
+    );
+  }
+
   const result = spawnSync('claude', ['--print', '--model', model], {
     input: prompt,
     encoding: 'utf8',
@@ -24,10 +38,22 @@ function spawnAgent({
   return result.stdout;
 }
 
-export function spawnDetectorAgent(prompt: string): string | null {
-  return spawnAgent({ model: HAIKU_MODEL, prompt });
+export function spawnDetectorAgent(
+  options: Pick<SpawnAgentParams, 'attempt' | 'cwd' | 'prompt'>,
+): string | null {
+  return spawnAgent({
+    model: DETECTOR_MODEL,
+    agentName: 'detector',
+    ...options,
+  });
 }
 
-export function spawnSummarizerAgent(prompt: string): string | null {
-  return spawnAgent({ model: SONNET_MODEL, prompt });
+export function spawnSummarizerAgent(
+  options: Pick<SpawnAgentParams, 'attempt' | 'cwd' | 'prompt'>,
+): string | null {
+  return spawnAgent({
+    ...options,
+    model: SUMMARIZER_MODEL,
+    agentName: 'summarizer',
+  });
 }

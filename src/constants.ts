@@ -1,5 +1,5 @@
-export const HAIKU_MODEL = 'claude-haiku-4-5-20251001';
-export const SONNET_MODEL = 'claude-sonnet-4-6';
+export const DETECTOR_MODEL = 'claude-haiku-4-5-20251001';
+export const SUMMARIZER_MODEL = 'claude-sonnet-4-6';
 
 export const STEERING_LOG_DIR = 'steering_log';
 export const CONVERSATION_DIR = '.conversation';

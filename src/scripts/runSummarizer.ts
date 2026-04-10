@@ -7,7 +7,7 @@ import { findLatestEpisode } from '@/helpers/findLatestEpisode';
 import { spawnSummarizerAgent } from '@/helpers/spawnAgents';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import type { SummarizerContext } from '@/types';
+import type { SummarizerAgentOutput, SummarizerContext } from '@/types';
 import { completeEpisode } from '@/helpers/completeEpisode';
 import { writeMoment } from '@/helpers/writeMoment';
 import { writeTranscript } from '@/helpers/writeTranscript';
@@ -47,15 +47,10 @@ export function runSummarizer(cwd: string): void {
         ? readFileSync(latestEpisode, 'utf-8')
         : undefined;
 
-    let parsed = parseSummarizerAgentOutput(
-      spawnSummarizerAgent(buildPrompt(context, episodeContent)),
+    const parsed = runSummarizerWithRetry(
+      cwd,
+      buildPrompt(context, episodeContent),
     );
-
-    for (let attempt = 1; parsed === null && attempt <= AGENT_MAX_RETRIES; attempt++) {
-      parsed = parseSummarizerAgentOutput(
-        spawnSummarizerAgent(buildPrompt(context, episodeContent)),
-      );
-    }
 
     if (
       !parsed?.isMoment ||
@@ -102,6 +97,27 @@ export function runSummarizer(cwd: string): void {
 
     advance();
   }
+}
+
+function runSummarizerWithRetry(
+  cwd: string,
+  prompt: string,
+): SummarizerAgentOutput | null {
+  let agentOutput = parseSummarizerAgentOutput(
+    spawnSummarizerAgent({ cwd, prompt, attempt: 0 }),
+  );
+
+  for (
+    let attempt = 1;
+    agentOutput === null && attempt <= AGENT_MAX_RETRIES;
+    attempt++
+  ) {
+    agentOutput = parseSummarizerAgentOutput(
+      spawnSummarizerAgent({ cwd, prompt, attempt }),
+    );
+  }
+
+  return agentOutput;
 }
 
 function buildPrompt(

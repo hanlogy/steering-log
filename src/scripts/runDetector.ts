@@ -5,6 +5,7 @@ import { parseDetectorAgentOutput } from '@/helpers/parseDetectorAgentOutput';
 import { spawnSummarizerScript } from '@/helpers/spawnScripts';
 import { spawnDetectorAgent } from '@/helpers/spawnAgents';
 import { AGENT_MAX_RETRIES } from '@/constants';
+import type { DetectorAgentOutput } from '@/types';
 
 const cwd = process.argv[2];
 
@@ -32,15 +33,10 @@ export function runDetector(cwd: string): void {
 
     lastTimestamp = humanMessage.timestamp;
 
-    let agentOutput = parseDetectorAgentOutput(
-      spawnDetectorAgent(buildPrompt(context.messages)),
+    const agentOutput = runDetectorWithRetry(
+      cwd,
+      buildPrompt(context.messages),
     );
-
-    for (let attempt = 1; agentOutput === null && attempt <= AGENT_MAX_RETRIES; attempt++) {
-      agentOutput = parseDetectorAgentOutput(
-        spawnDetectorAgent(buildPrompt(context.messages)),
-      );
-    }
 
     if (agentOutput === null) {
       advance();
@@ -54,6 +50,27 @@ export function runDetector(cwd: string): void {
 
     advance();
   }
+}
+
+function runDetectorWithRetry(
+  cwd: string,
+  prompt: string,
+): DetectorAgentOutput | null {
+  let agentOutput = parseDetectorAgentOutput(
+    spawnDetectorAgent({ cwd, prompt, attempt: 0 }),
+  );
+
+  for (
+    let attempt = 1;
+    agentOutput === null && attempt <= AGENT_MAX_RETRIES;
+    attempt++
+  ) {
+    agentOutput = parseDetectorAgentOutput(
+      spawnDetectorAgent({ cwd, prompt, attempt }),
+    );
+  }
+
+  return agentOutput;
 }
 
 function buildPrompt(

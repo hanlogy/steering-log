@@ -1,6 +1,8 @@
 import type {
   EPISODE_RESULTS,
+  DETECTOR_MODEL,
   HOOK_EVENT_NAMES,
+  SUMMARIZER_MODEL,
   STEERING_TYPES,
 } from './constants';
 
@@ -89,4 +91,12 @@ export interface DetectorContext {
 
 export interface DetectorAgentOutput {
   readonly isTrigger: boolean;
+}
+
+export interface SpawnAgentParams {
+  model: typeof DETECTOR_MODEL | typeof SUMMARIZER_MODEL;
+  prompt: string;
+  agentName: 'detector' | 'summarizer';
+  cwd: string;
+  attempt: number;
 }
