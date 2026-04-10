@@ -104,12 +104,12 @@ function runSummarizerWithRetry(
   prompt: string,
 ): SummarizerAgentOutput | null {
   let agentOutput = parseSummarizerAgentOutput(
-    spawnSummarizerAgent({ cwd, prompt, attempt: 0 }),
+    spawnSummarizerAgent({ cwd, prompt, attempt: 1 }),
   );
 
   for (
-    let attempt = 1;
-    agentOutput === null && attempt <= AGENT_MAX_RETRIES;
+    let attempt = 2;
+    agentOutput === null && attempt <= AGENT_MAX_RETRIES + 1;
     attempt++
   ) {
     agentOutput = parseSummarizerAgentOutput(

@@ -1,6 +1,6 @@
 import { spawnSync } from 'child_process';
 import { DETECTOR_MODEL, SUMMARIZER_MODEL } from '@/constants';
-import { appendFileSync } from 'fs';
+import { appendFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { buildPaths } from './buildPaths';
 import type { SpawnAgentParams } from '@/types';
@@ -14,6 +14,7 @@ function spawnAgent({
 }: SpawnAgentParams): string | null {
   if (process.env['CLAUDE_PLUGIN_OPTION_DEBUG_PROMPTS'] === 'true') {
     const { conversationDir } = buildPaths(cwd);
+    mkdirSync(conversationDir, { recursive: true });
     const logPath = join(conversationDir, `${agentName}-prompts.log`);
 
     appendFileSync(
@@ -52,8 +53,8 @@ export function spawnSummarizerAgent(
   options: Pick<SpawnAgentParams, 'attempt' | 'cwd' | 'prompt'>,
 ): string | null {
   return spawnAgent({
-    ...options,
     model: SUMMARIZER_MODEL,
     agentName: 'summarizer',
+    ...options,
   });
 }

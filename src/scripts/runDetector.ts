@@ -57,12 +57,12 @@ function runDetectorWithRetry(
   prompt: string,
 ): DetectorAgentOutput | null {
   let agentOutput = parseDetectorAgentOutput(
-    spawnDetectorAgent({ cwd, prompt, attempt: 0 }),
+    spawnDetectorAgent({ cwd, prompt, attempt: 1 }),
   );
 
   for (
-    let attempt = 1;
-    agentOutput === null && attempt <= AGENT_MAX_RETRIES;
+    let attempt = 2;
+    agentOutput === null && attempt <= AGENT_MAX_RETRIES + 1;
     attempt++
   ) {
     agentOutput = parseDetectorAgentOutput(
