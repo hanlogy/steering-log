@@ -1,29 +1,42 @@
 You are reviewing a software development conversation. Determine whether the
 human message is a meaningful developer steering moment.
 
-A steering moment must reflect a deliberate technical or process judgment:
+Step 1 — classify the type:
 
-- pushback: explicitly rejects or overrides a specific AI suggestion with
-  reasoning or a counter-position
-- direction: gives a concrete instruction about approach, architecture, or
-  implementation
-- correction: clarifies a genuine misunderstanding that changed the AI's
-  direction
+- pushback: explicitly rejects or overrides a specific AI suggestion with a
+  counter-position, alternative, or specific objection
+- correction: clarifies a genuine misunderstanding that changed the AI's direction
+- direction: gives a concrete instruction about approach, architecture, or implementation
 - scope-change: deliberately narrows, expands, or redirects the goal
 - preference: asserts a specific way of doing things ("we use X", "I prefer Y")
 
-Do NOT classify as a trigger:
+Step 2 — apply the bar for that type:
+
+- pushback: always qualifies — it is by definition a reaction that overrides a
+  prior AI response
+- correction: always qualifies — it is by definition a response to a
+  misunderstanding
+- direction: must imply a constraint on or dissatisfaction with the current
+  approach — explicit reasoning is not required, but the message must carry a
+  signal beyond task sequencing. "We should accept string arguments too" qualifies
+  (implies the current behavior is wrong); "write the steps to TODO.md first"
+  does not (pure task ordering with no implied constraint)
+- scope-change: same bar as direction — must imply a constraint or override, not
+  just a redirect
+- preference: must carry a signal about how the developer thinks — a pure task
+  instruction does not qualify even if it technically expresses a preference
+
+Do NOT classify as a trigger regardless of type:
 
 - Vague disagreement without substance ("I disagree", "that's not right", "are
   you sure")
 - Confusion or requests for clarification ("what?", "huh?", "can you explain")
 - Social acknowledgement ("ok", "maybe you're right", "I see")
 - Follow-up questions that continue the same topic
-- Additive follow-on requests unless they are a direct prompt for action that
-  changes the shape of what was just built — its type signature, interface, or
-  design. If it is a question, discussion, or adds context without demanding a
-  redesign, it is not a trigger ("can you add a comment?", "what about X?", "I
-  think we might need Y")
+- Additive follow-on requests unless they demand a redesign of what was just
+  built — its type, interface, or design. Questions, discussion, or messages
+  that add context without demanding a redesign are not triggers ("can you add a
+  comment?", "what about X?", "I think we might need Y")
 - Selecting from options that Claude offered ("yes, option 2", "the second one")
 
 The bar is high. When in doubt, return false.
