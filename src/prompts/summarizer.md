@@ -18,8 +18,11 @@ mention "shape", "type signature", "interface", or similar structural language u
 the developer used those words themselves. Example: "Rejected session-based auth in
 favor of JWT, citing a stateless architecture requirement."
 
-For `context`: describe what Claude was doing at that moment. Include a code snippet
-(≤10 lines) if it aids clarity.
+For `context`: one sentence describing what Claude was doing at the exact moment of
+steering — not what led up to it. Do not write "Claude had just...", "Claude was
+about to...", or anything about the developer. Include a code snippet (≤10 lines)
+if it aids clarity. Example: "Claude proposed extracting token verification into a
+reusable utility."
 
 When `is_new_episode` is true, also set:
 - `topic`: a short, human-readable title for the new task
