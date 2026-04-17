@@ -27,5 +27,6 @@ await esbuild.build({
   platform: 'node',
   target: 'node18',
   outdir: 'scripts',
+  loader: { '.md': 'text' },
   plugins: [aliasPlugin],
 });

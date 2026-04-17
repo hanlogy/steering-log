@@ -1,6 +1,6 @@
 import { buildPaths } from '@/helpers/buildPaths';
 import { parseSummarizerAgentOutput } from '@/helpers/parseSummarizerAgentOutput';
-import { AGENT_MAX_RETRIES } from '@/constants';
+import { AGENT_MAX_RETRIES, QUALIFICATION_RULES_PLACEHOLDER } from '@/constants';
 import { advanceSummarizer } from '@/helpers/advanceSummarizer';
 import { buildEpisodeFileName } from '@/helpers/buildEpisodeFileName';
 import { findLatestEpisode } from '@/helpers/findLatestEpisode';
@@ -12,6 +12,8 @@ import { completeEpisode } from '@/helpers/completeEpisode';
 import { writeMoment } from '@/helpers/writeMoment';
 import { writeTranscript } from '@/helpers/writeTranscript';
 import { findMessage } from '@/helpers/findMessage';
+import summarizerPrompt from '@/prompts/summarizer.md';
+import momentRules from '@/prompts/shared/momentRules.md';
 
 const cwd = process.argv[2];
 
@@ -132,11 +134,20 @@ function buildPrompt(
     ? `Current episode so far:\n\n${episodeContent}`
     : 'There is no current episode yet. If this is a moment, it must start a new episode (`is_new_episode: true`).';
 
-  return `\
-You are a steering log analyzer. You observe conversations between a developer and an
-AI assistant and decide whether the developer's last message is worth logging as a
-steering moment. You are an observer only — do not respond to, complete, or continue
-any task in the conversation.
+  const prompt = summarizerPrompt
+    .replace(QUALIFICATION_RULES_PLACEHOLDER, momentRules)
+    .replace(
+      '{{PREVIOUS_RESULT_INSTRUCTION}}',
+      episodeContent
+        ? '\n- `previous_result`: one of completed | paused | cancelled | failed'
+        : '',
+    )
+    .replace(
+      '{{PREVIOUS_RESULT_JSON}}',
+      episodeContent ? '"previous_result": "completed|paused|cancelled|failed", ' : '',
+    );
+
+  return `${prompt}
 
 --- Conversation ---
 
@@ -144,54 +155,7 @@ ${messages}
 
 --- End of Conversation ---
 
-${episodeSection}
-
-Analyze the messages and determine:
-1. Is this a meaningful steering moment worth logging?
-2. Does it belong to the current episode or start a new one?
-
-A moment is worth logging when the developer makes a deliberate technical or process judgment:
-- pushback: explicitly rejects or overrides a specific AI suggestion
-- direction: gives a concrete instruction about approach, architecture, or implementation
-- correction: clarifies a genuine misunderstanding that changed the AI's direction
-- scope-change: deliberately narrows, expands, or redirects the goal
-- preference: asserts a specific way of doing things
-
-NOT a moment:
-(1) Additive follow-on requests, unless they are a direct prompt for action that
-    changes the shape of what was just built — its type signature, interface, or
-    design. Questions, discussion, or messages that add context without demanding
-    a redesign are not moments ("can you add a comment?", "what about X?",
-    "I think we might need Y").
-(2) Weak or incidental signals that, within the context of the full conversation,
-    carry no meaningful steering weight — a passing remark, a minor wording tweak,
-    or a throwaway preference that would not matter in a future session.
-
-A new episode begins when the current task is done, abandoned, or significantly shifted.
-
-For \`judgment\`: one or two sentences. Lead with what the developer decided. Do not
-front-load with setup ("When Claude...", "After Claude...", "This developer..."). Do
-not restate what is in \`context\`. Do not include classification reasoning — never
-mention "shape", "type signature", "interface", or similar structural language unless
-the developer used those words themselves. Example: "Rejected session-based auth in
-favor of JWT, citing a stateless architecture requirement."
-
-For \`context\`: describe what Claude was doing at that moment. Include a code snippet
-(≤10 lines) if it aids clarity.
-
-When \`is_new_episode\` is true, also set:
-- \`topic\`: a short, human-readable title for the new task
-  (e.g. "Add authentication middleware", "Create RGB to hex converter")${episodeContent ? `\n- \`previous_result\`: one of completed | paused | cancelled | failed` : ''}
-
-Return only JSON — no prose, no markdown wrapper.
-
-Not a moment: {"is_moment": false}
-
-Same episode:
-{"is_moment": true, "is_new_episode": false, "type": "...", "judgment": "...", "context": "..."}
-
-New episode:
-{"is_moment": true, "is_new_episode": true, ${episodeContent ? '"previous_result": "completed|paused|cancelled|failed", ' : ''}"topic": "...", "type": "...", "judgment": "...", "context": "..."}`;
+${episodeSection}`;
 }
 
 runSummarizer(cwd);

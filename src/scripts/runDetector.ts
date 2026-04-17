@@ -4,8 +4,10 @@ import { writeTriggersQueue } from '@/helpers/writeTriggersQueue';
 import { parseDetectorAgentOutput } from '@/helpers/parseDetectorAgentOutput';
 import { spawnSummarizerScript } from '@/helpers/spawnScripts';
 import { spawnDetectorAgent } from '@/helpers/spawnAgents';
-import { AGENT_MAX_RETRIES } from '@/constants';
+import { AGENT_MAX_RETRIES, QUALIFICATION_RULES_PLACEHOLDER } from '@/constants';
 import type { DetectorAgentOutput } from '@/types';
+import systemPrompt from '@/prompts/detector.md';
+import momentRules from '@/prompts/shared/momentRules.md';
 
 const cwd = process.argv[2];
 
@@ -76,39 +78,20 @@ function runDetectorWithRetry(
 function buildPrompt(
   messages: readonly { role: string; content: string }[],
 ): string {
-  const formatted = messages
+  const conversation = messages
     .map(({ role, content }) => `[${role}]: ${content}`)
     .join('\n\n');
 
+  const prompt = systemPrompt.replace(QUALIFICATION_RULES_PLACEHOLDER, momentRules);
+
   return `\
-${formatted}
+${prompt}
 
-You are reviewing a software development conversation.
-Determine whether the human message is a meaningful developer steering moment.
+--- Conversation ---
 
-A steering moment must reflect a deliberate technical or process judgment:
-- pushback: explicitly rejects or overrides a specific AI suggestion with reasoning
-  or a counter-position
-- direction: gives a concrete instruction about approach, architecture, or implementation
-- correction: clarifies a genuine misunderstanding that changed the AI's direction
-- scope-change: deliberately narrows, expands, or redirects the goal
-- preference: asserts a specific way of doing things ("we use X", "I prefer Y")
+${conversation}
 
-Do NOT classify as a trigger:
-- Vague disagreement without substance ("I disagree", "that's not right", "are you sure")
-- Confusion or requests for clarification ("what?", "huh?", "can you explain")
-- Social acknowledgement ("ok", "maybe you're right", "I see")
-- Follow-up questions that continue the same topic
-- Additive follow-on requests unless they are a direct prompt for action that
-  changes the shape of what was just built — its type signature, interface, or
-  design. If it is a question, discussion, or adds context without demanding a
-  redesign, it is not a trigger ("can you add a comment?", "what about X?",
-  "I think we might need Y")
-- Selecting from options that Claude offered ("yes, option 2", "the second one")
-
-The bar is high. When in doubt, return false.
-
-Return only JSON — no prose, no markdown: {"is_trigger": true} or {"is_trigger": false}.`;
+--- End of Conversation ---`;
 }
 
 runDetector(cwd);
