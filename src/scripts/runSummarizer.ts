@@ -1,6 +1,6 @@
 import { buildPaths } from '@/helpers/buildPaths';
 import { parseSummarizerAgentOutput } from '@/helpers/parseSummarizerAgentOutput';
-import { AGENT_MAX_RETRIES } from '@/constants';
+import { AGENT_MAX_RETRIES, QUALIFICATION_RULES_PLACEHOLDER } from '@/constants';
 import { advanceSummarizer } from '@/helpers/advanceSummarizer';
 import { buildEpisodeFileName } from '@/helpers/buildEpisodeFileName';
 import { findLatestEpisode } from '@/helpers/findLatestEpisode';
@@ -13,6 +13,7 @@ import { writeMoment } from '@/helpers/writeMoment';
 import { writeTranscript } from '@/helpers/writeTranscript';
 import { findMessage } from '@/helpers/findMessage';
 import summarizerPrompt from '@/prompts/summarizer.md';
+import momentRules from '@/prompts/shared/momentRules.md';
 
 const cwd = process.argv[2];
 
@@ -134,6 +135,7 @@ function buildPrompt(
     : 'There is no current episode yet. If this is a moment, it must start a new episode (`is_new_episode: true`).';
 
   const prompt = summarizerPrompt
+    .replace(QUALIFICATION_RULES_PLACEHOLDER, momentRules)
     .replace(
       '{{PREVIOUS_RESULT_INSTRUCTION}}',
       episodeContent

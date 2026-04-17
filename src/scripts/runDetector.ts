@@ -4,9 +4,10 @@ import { writeTriggersQueue } from '@/helpers/writeTriggersQueue';
 import { parseDetectorAgentOutput } from '@/helpers/parseDetectorAgentOutput';
 import { spawnSummarizerScript } from '@/helpers/spawnScripts';
 import { spawnDetectorAgent } from '@/helpers/spawnAgents';
-import { AGENT_MAX_RETRIES } from '@/constants';
+import { AGENT_MAX_RETRIES, QUALIFICATION_RULES_PLACEHOLDER } from '@/constants';
 import type { DetectorAgentOutput } from '@/types';
 import systemPrompt from '@/prompts/detector.md';
+import momentRules from '@/prompts/shared/momentRules.md';
 
 const cwd = process.argv[2];
 
@@ -81,8 +82,10 @@ function buildPrompt(
     .map(({ role, content }) => `[${role}]: ${content}`)
     .join('\n\n');
 
+  const prompt = systemPrompt.replace(QUALIFICATION_RULES_PLACEHOLDER, momentRules);
+
   return `\
-${systemPrompt}
+${prompt}
 
 --- Conversation ---
 

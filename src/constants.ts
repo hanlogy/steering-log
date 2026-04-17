@@ -33,6 +33,8 @@ export const HOOK_EVENT_NAMES = [
 
 export const AGENT_MAX_RETRIES = 2;
 
+export const QUALIFICATION_RULES_PLACEHOLDER = '{{QUALIFICATION_RULES}}';
+
 export const SCRIPTS_DIR = 'scripts/';
 export const CLEANUP_SCRIPT = 'cleanup.js';
 export const APPEND_TO_BUFFER_SCRIPT = 'appendToBuffer.js';

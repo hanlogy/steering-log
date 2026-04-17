@@ -7,22 +7,7 @@ Analyze the messages and determine:
 1. Is this a meaningful steering moment worth logging?
 2. Does it belong to the current episode or start a new one?
 
-A moment is worth logging when the developer makes a deliberate technical or process judgment:
-- pushback: explicitly rejects or overrides a specific AI suggestion
-- direction: gives a concrete instruction about approach, architecture, or implementation
-- correction: clarifies a genuine misunderstanding that changed the AI's direction
-- scope-change: deliberately narrows, expands, or redirects the goal
-- preference: asserts a specific way of doing things
-
-NOT a moment:
-(1) Additive follow-on requests, unless they are a direct prompt for action that
-    changes the shape of what was just built — its type signature, interface, or
-    design. Questions, discussion, or messages that add context without demanding
-    a redesign are not moments ("can you add a comment?", "what about X?",
-    "I think we might need Y").
-(2) Weak or incidental signals that, within the context of the full conversation,
-    carry no meaningful steering weight — a passing remark, a minor wording tweak,
-    or a throwaway preference that would not matter in a future session.
+{{QUALIFICATION_RULES}}
 
 A new episode begins when the current task is done, abandoned, or significantly shifted.
 
