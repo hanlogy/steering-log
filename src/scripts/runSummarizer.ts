@@ -12,8 +12,7 @@ import { completeEpisode } from '@/helpers/completeEpisode';
 import { writeMoment } from '@/helpers/writeMoment';
 import { writeTranscript } from '@/helpers/writeTranscript';
 import { findMessage } from '@/helpers/findMessage';
-import summarizerPreamble from '@/prompts/summarizer-preamble.md';
-import summarizerInstructions from '@/prompts/summarizer-instructions.md';
+import summarizerPrompt from '@/prompts/summarizer.md';
 
 const cwd = process.argv[2];
 
@@ -134,7 +133,7 @@ function buildPrompt(
     ? `Current episode so far:\n\n${episodeContent}`
     : 'There is no current episode yet. If this is a moment, it must start a new episode (`is_new_episode: true`).';
 
-  const instructions = summarizerInstructions
+  const prompt = summarizerPrompt
     .replace(
       '{{PREVIOUS_RESULT_INSTRUCTION}}',
       episodeContent
@@ -146,16 +145,15 @@ function buildPrompt(
       episodeContent ? '"previous_result": "completed|paused|cancelled|failed", ' : '',
     );
 
-  return `${summarizerPreamble}
+  return `${prompt}
+
 --- Conversation ---
 
 ${messages}
 
 --- End of Conversation ---
 
-${episodeSection}
-
-${instructions}`;
+${episodeSection}`;
 }
 
 runSummarizer(cwd);

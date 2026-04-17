@@ -81,7 +81,14 @@ function buildPrompt(
     .map(({ role, content }) => `[${role}]: ${content}`)
     .join('\n\n');
 
-  return `${conversation}\n\n${systemPrompt}`;
+  return `\
+${systemPrompt}
+
+--- Conversation ---
+
+${conversation}
+
+--- End of Conversation ---`;
 }
 
 runDetector(cwd);
