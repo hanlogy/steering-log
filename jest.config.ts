@@ -6,6 +6,7 @@ const config: Config = {
   extensionsToTreatAsEsm: [],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
+    '\\.md$': '<rootDir>/jest.mdTransform.cjs',
   },
   testMatch: ['**/__test__/**/*.test.ts'],
   moduleNameMapper: {

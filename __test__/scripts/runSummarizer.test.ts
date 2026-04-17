@@ -211,7 +211,9 @@ describe('runSummarizer', () => {
     runSummarizer(CWD);
 
     expect(mockSpawnSummarizerAgent).toHaveBeenCalledWith(
-      expect.objectContaining({ prompt: expect.stringContaining('episode content') }),
+      expect.objectContaining({
+        prompt: expect.stringContaining('episode content'),
+      }),
     );
   });
 
@@ -225,7 +227,9 @@ describe('runSummarizer', () => {
     runSummarizer(CWD);
 
     expect(mockSpawnSummarizerAgent).toHaveBeenCalledWith(
-      expect.objectContaining({ prompt: expect.stringContaining('There is no current episode yet') }),
+      expect.objectContaining({
+        prompt: expect.stringContaining('There is no current episode yet'),
+      }),
     );
   });
 
