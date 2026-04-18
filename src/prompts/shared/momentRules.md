@@ -1,3 +1,5 @@
+## How to qualify a moment
+
 Step 1 — classify the type:
 
 - pushback: explicitly rejects or overrides a specific AI suggestion with a
@@ -38,3 +40,5 @@ Do NOT classify as a moment regardless of type:
 - Weak or incidental signals that carry no meaningful steering weight — a passing
   remark, a minor wording tweak, or a throwaway preference that would not matter
   in a future session
+
+The bar is high. When in doubt, return false.

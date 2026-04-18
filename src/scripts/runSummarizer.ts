@@ -132,14 +132,18 @@ function buildPrompt(
 
   const episodeSection = episodeContent
     ? `Current episode so far:\n\n${episodeContent}`
-    : 'There is no current episode yet. If this is a moment, it must start a new episode (`is_new_episode: true`).';
+    : 'There is no current episode yet.';
 
   const prompt = summarizerPrompt
     .replace(QUALIFICATION_RULES_PLACEHOLDER, momentRules)
     .replace(
       '{{PREVIOUS_RESULT_INSTRUCTION}}',
       episodeContent
-        ? '\n- `previous_result`: one of completed | paused | cancelled | failed'
+        ? [
+            '',
+            '## How to write `previous_result`',
+            'Only set when `is_new_episode` is true. One of: completed | paused | cancelled | failed — how the previous episode ended.',
+          ].join('\n\n')
         : '',
     )
     .replace(
